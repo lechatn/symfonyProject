@@ -3,16 +3,17 @@
 namespace App\Entity;
 
 use App\Repository\HabitsRepository;
-use Doctrine\DBAL\Types\Types;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Ramsey\Uuid\Guid\Guid;
 
 #[ORM\Entity(repositoryClass: HabitsRepository::class)]
 class Habits
 {
     #[ORM\Id]
-    #[ORM\Column(type: Types::GUID)]
-    private ?string $idHabit = null;
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     private ?string $description = null;
@@ -26,14 +27,17 @@ class Habits
     #[ORM\Column(length: 255)]
     private ?string $frequency = null;
 
+    #[ORM\OneToMany(targetEntity: HabitTracking::class, mappedBy: 'idHabit')]
+    private Collection $habitTrackings;
+
     public function __construct()
     {
-        $this->idHabit = Guid::uuid4()->toString();
+        $this->habitTrackings = new ArrayCollection();
     }
 
-    public function getIdHabit(): ?string
+    public function getId(): ?int
     {
-        return $this->idHabit;
+        return $this->id;
     }
 
     public function getDescription(): ?string
@@ -80,6 +84,36 @@ class Habits
     public function setFrequency(string $frequency): static
     {
         $this->frequency = $frequency;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, HabitTracking>
+     */
+    public function getHabitTrackings(): Collection
+    {
+        return $this->habitTrackings;
+    }
+
+    public function addHabitTracking(HabitTracking $habitTracking): static
+    {
+        if (!$this->habitTrackings->contains($habitTracking)) {
+            $this->habitTrackings->add($habitTracking);
+            $habitTracking->setIdHabit($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHabitTracking(HabitTracking $habitTracking): static
+    {
+        if ($this->habitTrackings->removeElement($habitTracking)) {
+            // set the owning side to null (unless already changed)
+            if ($habitTracking->getIdHabit() === $this) {
+                $habitTracking->setIdHabit(null);
+            }
+        }
 
         return $this;
     }

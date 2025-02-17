@@ -11,13 +11,28 @@ use Symfony\Component\Form\Extension\Core\Type\ColorType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class HabitFormType extends AbstractType
 {
         public function buildForm(FormBuilderInterface $builder, array $options): void
         {
             $builder
-                ->add('description', TextType::class)
+                ->add('description', TextType::class,[
+                    'required' => false,
+                    'constraints' => [
+                        new NotBlank([
+                            'message' => 'Please enter a description',
+                        ]),
+                        new Length([
+                            'min' => 3,
+                            'minMessage' => 'Your description should be at least {{ limit }} characters',
+                            'max' => 255,
+                            'maxMessage' => 'Your description should be at most {{ limit }} characters',
+                        ]),
+                    ],
+                ])
                 ->add('difficulty', ChoiceType::class, [
                     'choices' => [
                         'very easy' => 'very easy',
@@ -25,12 +40,32 @@ class HabitFormType extends AbstractType
                         'medium' => 'medium',
                         'hard' => 'hard',
                     ],
+                    'required' => false,
+                    'constraints' => [
+                        new NotBlank([
+                            'message' => 'Please select a difficulty',
+                        ]),
+                    ],
+
                 ])
-                ->add('color', ColorType::class)
+                ->add('color', ColorType::class,[
+                    'required' => false,
+                    'constraints' => [
+                        new NotBlank([
+                            'message' => 'Please select a color',
+                        ]),
+                    ],
+                ])
                 ->add('frequency', ChoiceType::class, [
                     'choices' => [
                         'daily' => 'daily',
                         'weekly' => 'weekly',
+                    ],
+                    'required' => false,
+                    'constraints' => [
+                        new NotBlank([
+                            'message' => 'Please select a frequency',
+                        ]),
                     ],
                 ])
                 ->add('save', SubmitType::class)

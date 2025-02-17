@@ -2,27 +2,27 @@
 
 namespace App\Repository;
 
-use App\Entity\HabitsTracking;
+use App\Entity\HabitTracking;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<HabitsTracking>
+ * @extends ServiceEntityRepository<HabitTracking>
  *
- * @method HabitsTracking|null find($id, $lockMode = null, $lockVersion = null)
- * @method HabitsTracking|null findOneBy(array $criteria, array $orderBy = null)
- * @method HabitsTracking[]    findAll()
- * @method HabitsTracking[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method HabitTracking|null find($id, $lockMode = null, $lockVersion = null)
+ * @method HabitTracking|null findOneBy(array $criteria, array $orderBy = null)
+ * @method HabitTracking[]    findAll()
+ * @method HabitTracking[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class HabitsTrackingRepository extends ServiceEntityRepository
+class HabitTrackingRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, HabitsTracking::class);
+        parent::__construct($registry, HabitTracking::class);
     }
 
 //    /**
-//     * @return HabitsTracking[] Returns an array of HabitsTracking objects
+//     * @return HabitTracking[] Returns an array of HabitTracking objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -36,7 +36,7 @@ class HabitsTrackingRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?HabitsTracking
+//    public function findOneBySomeField($value): ?HabitTracking
 //    {
 //        return $this->createQueryBuilder('h')
 //            ->andWhere('h.exampleField = :val')

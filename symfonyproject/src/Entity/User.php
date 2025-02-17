@@ -3,17 +3,17 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
-use Doctrine\DBAL\Types\Types;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Ramsey\Uuid\Guid\Guid;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`user`')]
 class User
 {
     #[ORM\Id]
-    #[ORM\Column(type: Types::GUID)]
-    private ?string $idUser = null;
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     private ?string $email = null;
@@ -30,18 +30,23 @@ class User
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 255)]
     private ?string $profilePicture = null;
 
+    #[ORM\OneToMany(targetEntity: HabitTracking::class, mappedBy: 'idUser')]
+    private Collection $habitTrackings;
+
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    private ?Group $idGroup = null;
 
     public function __construct()
     {
-        $this->idUser = Guid::uuid4()->toString();
+        $this->habitTrackings = new ArrayCollection();
     }
 
-    public function getIdUser(): ?string
+    public function getId(): ?int
     {
-        return $this->idUser;
+        return $this->id;
     }
 
     public function getEmail(): ?string
@@ -109,9 +114,51 @@ class User
         return $this->profilePicture;
     }
 
-    public function setProfilePicture(?string $profilePicture): static
+    public function setProfilePicture(string $profilePicture): static
     {
         $this->profilePicture = $profilePicture;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, HabitTracking>
+     */
+    public function getHabitTrackings(): Collection
+    {
+        return $this->habitTrackings;
+    }
+
+    public function addHabitTracking(HabitTracking $habitTracking): static
+    {
+        if (!$this->habitTrackings->contains($habitTracking)) {
+            $this->habitTrackings->add($habitTracking);
+            $habitTracking->setIdUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHabitTracking(HabitTracking $habitTracking): static
+    {
+        if ($this->habitTrackings->removeElement($habitTracking)) {
+            // set the owning side to null (unless already changed)
+            if ($habitTracking->getIdUser() === $this) {
+                $habitTracking->setIdUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getIdGroup(): ?Group
+    {
+        return $this->idGroup;
+    }
+
+    public function setIdGroup(?Group $idGroup): static
+    {
+        $this->idGroup = $idGroup;
 
         return $this;
     }
