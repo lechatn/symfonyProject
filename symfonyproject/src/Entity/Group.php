@@ -25,12 +25,12 @@ class Group
     #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'idGroup')]
     private Collection $users;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $idCreator = null;
-
     #[ORM\OneToMany(targetEntity: ScoreHistory::class, mappedBy: 'idGroup')]
     private Collection $scoreHistories;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $creatorId = null;
 
     public function __construct()
     {
@@ -97,18 +97,6 @@ class Group
         return $this;
     }
 
-    public function getIdCreator(): ?User
-    {
-        return $this->idCreator;
-    }
-
-    public function setIdCreator(User $idCreator): static
-    {
-        $this->idCreator = $idCreator;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, ScoreHistory>
      */
@@ -135,6 +123,18 @@ class Group
                 $scoreHistory->setIdGroup(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreatorId(): ?User
+    {
+        return $this->creatorId;
+    }
+
+    public function setCreatorId(User $creatorId): static
+    {
+        $this->creatorId = $creatorId;
 
         return $this;
     }
