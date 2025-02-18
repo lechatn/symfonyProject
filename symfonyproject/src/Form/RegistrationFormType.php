@@ -13,6 +13,8 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\File;
 
 class RegistrationFormType extends AbstractType
 {
@@ -73,16 +75,19 @@ class RegistrationFormType extends AbstractType
                     ]),
                 ],
             ])
-            ->add('profilePicture', TextType::class, [
+            ->add('profilePicture', FileType::class, [
+                'label' => 'Profile Picture (JPEG or PNG file)',
+                'mapped' => false,
+                'required' => false,
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please enter a profile picture',
-                    ]),
-                    new Length([
-                        'min' => 3,
-                        'minMessage' => 'Your profile picture should be at least {{ limit }} characters',
-                        'max' => 255,
-                    ]),
+                    new File([
+                        'maxSize' => '1024k',
+                        'mimeTypes' => [
+                            'image/jpeg',
+                            'image/png',
+                        ],
+                        'mimeTypesMessage' => 'Please upload a valid image file (JPEG or PNG)',
+                    ])
                 ],
             ])
             ->add('submit', SubmitType::class, [

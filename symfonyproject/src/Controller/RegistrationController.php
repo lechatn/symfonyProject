@@ -33,6 +33,20 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $profilePictureFile = $form->get('profilePicture')->getData();
+            if ($profilePictureFile) {
+                $newFilename = uniqid() . '.' . $profilePictureFile->guessExtension();
+
+                // Déplacement du fichier vers le dossier de destination
+                $profilePictureFile->move(
+                    $this->getParameter('kernel.project_dir') . '/public/uploads',
+                    $newFilename
+                );
+
+                // Sauvegarde du chemin dans l'entité User
+                $user->setProfilePicture($newFilename);
+            }
+
             // encode the plain password
             $user -> setRoles(['ROLE_ADMIN']);
             $user->setPassword(
