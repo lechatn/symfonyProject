@@ -22,7 +22,7 @@
             <button type="submit">Quitter le groupe</button>
         </form>        
     {% else %}
-        {{ form(formGroup)}}
+        {{ form(formGroup) }}
         <h2> Join a group :</h2>
         {% for group in groups %}
             <form action="{{ path('join_group', { 'id': group.id }) }}" method="post">

@@ -10,6 +10,52 @@
 {% block body %}
 <div class="habits-container">
     <h1 class="habits-title">Habits</h1>
-    {{form(formHabits)}}
+    <button id="add-habits-btn">Add Habits</button>
+    <div id="habits-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            {{ form(formHabits) }}
+        </div>
+    </div>
+
+    <div class="my-habits">
+        <h2>My Habits</h2>
+        <h3>Points: {{ userPoints }}</h3>
+        <ul>
+            {% for habit in dataUser %}
+                <li style="background-color: {{ habit.color }};">
+                    <strong>Description:</strong> {{ habit.description }}<br>
+                    <strong>Difficulty:</strong> {{ habit.difficulty }}<br>
+                    {% if habit.difficulty == 'easy' %}
+                        <strong>Points:</strong> 2<br>
+                    {% elseif habit.difficulty == 'medium' %}
+                        <strong>Points:</strong> 5<br>
+                    {% elseif habit.difficulty =='very easy' %}
+                        <strong>Points:</strong> 1<br>
+                    {% else %}
+                        <strong>Points:</strong> 10<br>
+                    {% endif %}
+                    <strong>Frequency:</strong> {{ habit.frequency }}<br>
+                    {% for tracking in userTrackings %}
+                        {% if tracking.idHabit.id == habit.id %}
+                            <strong>Tracking:</strong> {{ tracking.status ? 'Completed' : 'Pending' }}<br>
+                            {% if tracking.status %}
+                                <button class="task-finished-btn">Task Finished</button>
+                            {% else %}
+                                <form action="{{ path('complete_task', { 'id': tracking.id }) }}" method="post">
+                                    <button type="submit" class="complete-task-btn">Finish Task</button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('assets/js/habits.js') }}"></script>
 {% endblock %}
