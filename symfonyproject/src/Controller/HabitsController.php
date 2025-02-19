@@ -23,8 +23,6 @@ class HabitsController extends AbstractController
 
         $habitsForm->handleRequest($request);   
 
-        $habitTracking = new HabitTracking();
-
         if ($habitsForm->isSubmitted() && $habitsForm->isValid())
         {
             $entityManager = $managerRegistry->getManager();
@@ -59,22 +57,25 @@ class HabitsController extends AbstractController
             $userHabits[] = $tracking->getIdHabit(); // Récupère l'objet Habits
         }
         
-        
         return $this->render('habits/habits.html.twig', [
             'formHabits' => $habitsForm->createView(),
             'dataUser' => $userHabits,
-            'userTrackings' => $userHabitTrackings
+            'userTrackings' => $userHabitTrackings,
+            'userPoints' => $user->getScore() // Assurez-vous que la méthode getPoints() existe dans l'entité User
         ]);
     }
 
     #[Route('/complete-task/{id}', name: 'complete_task', methods: ['POST'])]
-    public function completeTask(int $id, ManagerRegistry $managerRegistry): Response
+    public function completeTask(int $id, Request $request, ManagerRegistry $managerRegistry, TokenStorageInterface $tokenStorage): Response
     {
         $entityManager = $managerRegistry->getManager();
         $habitTracking = $entityManager->getRepository(HabitTracking::class)->find($id);
 
         if ($habitTracking) {
             $habitTracking->setStatus(true);
+            $points = $request->request->get('points', 0);
+            $user = $habitTracking->getIdUser();
+            $user->setScore($user->getScore() + $points);
             $entityManager->flush();
         }
 
