@@ -56,12 +56,15 @@ class HabitsController extends AbstractController
         foreach ($userHabitTrackings as $tracking) {
             $userHabits[] = $tracking->getIdHabit(); // Récupère l'objet Habits
         }
+
+        $isGroupCreator = $user->getIdGroup() ? $user->getIdGroup()->getCreatorId() === $user : false;
         
         return $this->render('habits/habits.html.twig', [
             'formHabits' => $habitsForm->createView(),
             'dataUser' => $userHabits,
             'userTrackings' => $userHabitTrackings,
-            'userPoints' => $user->getScore() // Assurez-vous que la méthode getPoints() existe dans l'entité User
+            'userPoints' => $user->getScore(),
+            'isGroupCreator' => $isGroupCreator
         ]);
     }
 
