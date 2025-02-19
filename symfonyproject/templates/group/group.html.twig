@@ -9,7 +9,27 @@
 
 {% block body %}
 <div class="group-container">
-    <h1 class="group-title">Group Name</h1>
-    {{form(formGroup)}}
+    <h1 class="group-title">Group Name : {{ groupName }}</h1>
+    {% if isInGroup %}
+        <h2 class="group-subtitle">Groupe Members :</h2>
+        <ul>
+            {% for member in groupMembers %}
+                <li>{{ member.pseudo }}</li>
+            {% endfor %}
+        </ul>
+        <h2>Score du groupe : {{ groupScore }}</h2>
+        <form action="{{ path('leave_group') }}" method="post">
+            <button type="submit">Quitter le groupe</button>
+        </form>        
+    {% else %}
+        {{ form(formGroup)}}
+        <h2> Join a group :</h2>
+        {% for group in groups %}
+            <form action="{{ path('join_group', { 'id': group.id }) }}" method="post">
+                <input type="hidden" name="groupId" value="{{ group.id }}">
+                <button type="submit">{{ group.name }}</button>
+            </form>
+        {% endfor %}
+    {% endif %}
 </div>
 {% endblock %}
