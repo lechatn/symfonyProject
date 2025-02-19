@@ -19,26 +19,7 @@ class HabitsController extends AbstractController
     public function index(Request $request, ManagerRegistry $managerRegistry, TokenStorageInterface $tokenStorage): Response
     {
         $habits = new Habits();
-        $habitsForm = $this->createForm(HabitFormType::class, $habits);
-
-        $habitsForm->handleRequest($request);   
-
-        if ($habitsForm->isSubmitted() && $habitsForm->isValid())
-        {
-            $entityManager = $managerRegistry->getManager();
-            $habit = $habitsForm->getData();
-
-            $habitTracking = new HabitTracking();
-            $habitTracking->setIdHabit($habit);
-            $habitTracking->setIdUser($this->getUser());
-            $habitTracking->setStatus(false);
-            $habitTracking->setDate(new \DateTime('now'));
-
-            $entityManager->persist($habit);
-            $entityManager->persist($habitTracking);
-            $entityManager->flush();
-        }
-
+        
         $token = $tokenStorage->getToken();
         if (null === $token) {
             throw new \LogicException('No token found in storage.');
@@ -49,22 +30,58 @@ class HabitsController extends AbstractController
             throw new \LogicException('The user is not authenticated or is not an instance of User.');
         }
 
-        $userHabitTrackings = $managerRegistry->getRepository(HabitTracking::class)->findBy(['idUser' => $user]);
+        $isGroupCreator = $user->getIdGroup() ? $user->getIdGroup()->getCreatorId() === $user : false;
 
-        // Extraire les objets Habits associés
-        $userHabits = [];
-        foreach ($userHabitTrackings as $tracking) {
-            $userHabits[] = $tracking->getIdHabit(); // Récupère l'objet Habits
+        $habitsForm = $this->createForm(HabitFormType::class, $habits, [
+            'is_group_creator' => $isGroupCreator,
+        ]);
+
+        $habitsForm->handleRequest($request);   
+
+        if ($habitsForm->isSubmitted() && $habitsForm->isValid())
+        {
+            $entityManager = $managerRegistry->getManager();
+            $habit = $habitsForm->getData();
+
+            $isGrouptask = $habitsForm->get('isGroupTask')->getData();
+
+            if ($isGrouptask) {
+                $group = $user->getIdGroup();
+                $allUsers = $group->getUsers();
+                foreach ($allUsers as $groupUser) {
+                    $habitTracking = new HabitTracking();
+                    $habitTracking->setIdHabit($habit);
+                    $habitTracking->setIdUser($groupUser);
+                    $habitTracking->setIdGroup($group);
+                    $habitTracking->setStatus(false);
+                    $habitTracking->setDate(new \DateTime('now'));
+                    $entityManager->persist($habitTracking);
+                }
+            } else {
+                $habitTracking = new HabitTracking();
+                $habitTracking->setIdHabit($habit);
+                $habitTracking->setIdUser($user);
+                $habitTracking->setStatus(false);
+                $habitTracking->setDate(new \DateTime('now'));
+                $entityManager->persist($habitTracking);
+            }
+
+            $entityManager->persist($habit);
+            $entityManager->flush();
         }
 
-        $isGroupCreator = $user->getIdGroup() ? $user->getIdGroup()->getCreatorId() === $user : false;
-        
+        $userHabitTrackings = $managerRegistry->getRepository(HabitTracking::class)->findBy(['idUser' => $user]);
+
+        $userHabits = [];
+        foreach ($userHabitTrackings as $tracking) {
+            $userHabits[] = $tracking->getIdHabit();
+        }
+
         return $this->render('habits/habits.html.twig', [
             'formHabits' => $habitsForm->createView(),
             'dataUser' => $userHabits,
             'userTrackings' => $userHabitTrackings,
             'userPoints' => $user->getScore(),
-            'isGroupCreator' => $isGroupCreator
         ]);
     }
 

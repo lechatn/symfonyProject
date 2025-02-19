@@ -28,6 +28,9 @@ class HabitTracking
     #[ORM\JoinColumn(nullable: false)]
     private ?User $idUser = null;
 
+    #[ORM\ManyToOne(inversedBy: 'habitTrackings')]
+    private ?Group $idGroup = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -77,6 +80,18 @@ class HabitTracking
     public function setIdUser(?User $idUser): static
     {
         $this->idUser = $idUser;
+
+        return $this;
+    }
+
+    public function getIdGroup(): ?Group
+    {
+        return $this->idGroup;
+    }
+
+    public function setIdGroup(?Group $idGroup): static
+    {
+        $this->idGroup = $idGroup;
 
         return $this;
     }

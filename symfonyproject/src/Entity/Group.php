@@ -32,10 +32,14 @@ class Group
     #[ORM\JoinColumn(nullable: false)]
     private ?User $creatorId = null;
 
+    #[ORM\OneToMany(targetEntity: HabitTracking::class, mappedBy: 'idGroup')]
+    private Collection $habitTrackings;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
         $this->scoreHistories = new ArrayCollection();
+        $this->habitTrackings = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -135,6 +139,36 @@ class Group
     public function setCreatorId(User $creatorId): static
     {
         $this->creatorId = $creatorId;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, HabitTracking>
+     */
+    public function getHabitTrackings(): Collection
+    {
+        return $this->habitTrackings;
+    }
+
+    public function addHabitTracking(HabitTracking $habitTracking): static
+    {
+        if (!$this->habitTrackings->contains($habitTracking)) {
+            $this->habitTrackings->add($habitTracking);
+            $habitTracking->setIdGroup($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHabitTracking(HabitTracking $habitTracking): static
+    {
+        if ($this->habitTrackings->removeElement($habitTracking)) {
+            // set the owning side to null (unless already changed)
+            if ($habitTracking->getIdGroup() === $this) {
+                $habitTracking->setIdGroup(null);
+            }
+        }
 
         return $this;
     }

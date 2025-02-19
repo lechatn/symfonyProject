@@ -6,10 +6,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Group;
+use App\Entity\HabitTracking;
 use App\Entity\User;
+use App\Entity\Habits;
 use Symfony\Component\HttpFoundation\Request;
 use App\Form\GroupeCreationType;
-use Doctrine\Common\Lexer\Token;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -119,10 +120,21 @@ class GroupController extends AbstractController
         $user->setIdGroup($group);
 
         $entityManager = $managerRegistry->getManager();
+
+        $groupHabitsTracking = $managerRegistry->getRepository(HabitTracking::class)->findBy(['idGroup' => $group]);
+        foreach ($groupHabitsTracking as $habit) {
+            $habitTracking = new HabitTracking();
+            $habitTracking->setIdHabit($habit->getIdHabit());
+            $habitTracking->setIdUser($user);
+            $habitTracking->setIdGroup($group);
+            $habitTracking->setStatus(false);
+            $habitTracking->setDate(new \DateTime('now'));
+            $entityManager->persist($habitTracking);
+        }
+
         $entityManager->persist($user);
         $entityManager->flush();
 
         return $this->redirectToRoute('group');
     }
-
 }
