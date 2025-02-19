@@ -13,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 class HabitFormType extends AbstractType
 {
@@ -73,6 +74,13 @@ class HabitFormType extends AbstractType
                 'label'    => 'Is this a group task?',
                 'required' => false,
                 'mapped' => false,
+            ]);
+        } else {
+            $builder->add('isGroupTask', HiddenType::class, [
+                'label'    => 'Is this a group task?',
+                'required' => false,
+                'mapped' => false,
+                'disabled' => true,
             ]);
         }
 

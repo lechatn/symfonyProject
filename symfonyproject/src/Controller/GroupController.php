@@ -93,9 +93,17 @@ class GroupController extends AbstractController
             throw new \LogicException('The user is not authenticated or is not an instance of User.');
         }
 
+        $entityManager = $managerRegistry->getManager();
+
+        // Supprimer les tâches de groupe associées à l'utilisateur
+        $groupHabitTrackings = $managerRegistry->getRepository(HabitTracking::class)->findBy(['idUser' => $user, 'idGroup' => $user->getIdGroup()]);
+        foreach ($groupHabitTrackings as $habitTracking) {
+            $entityManager->remove($habitTracking);
+        }
+
         $user->setIdGroup(null);
 
-        $entityManager = $managerRegistry->getManager();
+
         $entityManager->persist($user);
         $entityManager->flush();
 
@@ -121,6 +129,7 @@ class GroupController extends AbstractController
 
         $entityManager = $managerRegistry->getManager();
 
+        // Assigner les tâches de groupe à l'utilisateur qui rejoint le groupe
         $groupHabitsTracking = $managerRegistry->getRepository(HabitTracking::class)->findBy(['idGroup' => $group]);
         foreach ($groupHabitsTracking as $habit) {
             $habitTracking = new HabitTracking();
