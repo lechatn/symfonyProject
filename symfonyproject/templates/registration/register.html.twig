@@ -1,9 +1,5 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}Register{% endblock %}
-
 {% block stylesheets %}
-    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/register.css') }}">
 {% endblock %}
 
@@ -23,5 +19,6 @@
                 label: 'Password'
             }) }}
         {{ form_end(registrationForm) }}
+        <h6 class="login-link">Already have an account? <a href="{{ path('app_login') }}">Login</a></h2>
     </div>
 {% endblock %}

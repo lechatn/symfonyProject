@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class HabitsController extends AbstractController
 {
-    #[Route('/formhabits', name: 'formhabits')]
+    #[Route('/habits', name: 'formhabits')]
     public function index(Request $request, ManagerRegistry $managerRegistry)
     {
         $habits = new Habits();
@@ -29,8 +29,13 @@ class HabitsController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->render('habits/index.html.twig', [
+        return $this->render('habits/habits.html.twig', [
             'formHabits' => $habitsForm->createView()
         ]);
+    }
+
+    public function habits()
+    {
+        return $this->render('habits/habits.html.twig',[]);
     }
 }
