@@ -33,4 +33,9 @@ class HabitsController extends AbstractController
             'formHabits' => $habitsForm->createView()
         ]);
     }
+
+    public function habits()
+    {
+        return $this->render('habits/habits.html.twig',[]);
+    }
 }

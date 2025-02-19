@@ -8,6 +8,26 @@ accueil:
     path: /accueil
     controller: App\Controller\HomeController::accueil
 
+login:
+    path: /login
+    controller: App\Controller\SecurityController::login
+
+logout:
+    path: /logout
+    controller: App\Controller\SecurityController::logout
+
+profile:
+    path: /profile
+    controller: App\Controller\ProfileController::profile
+
+group:
+    path: /group
+    controller: App\Controller\GroupController::group
+
+habits:
+    path: /habits
+    controller: App\Controller\HabitsController::habits
+
 register:
     path: /
     controller: App\Controller\RegistrationController::register

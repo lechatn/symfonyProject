@@ -1,9 +1,5 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}Log in!{% endblock %}
-
 {% block stylesheets %}
-    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/login.css') }}">
 {% endblock %}
 
@@ -37,6 +33,7 @@
         <button class="btn btn-lg btn-primary" type="submit">
             Sign in
         </button>
+        <h6 class="register-link">Don't have an account? <a href="{{ path('register') }}">Register</a></h6>
     </form>
 </div>
 {% endblock %}

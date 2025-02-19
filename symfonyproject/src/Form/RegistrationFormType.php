@@ -78,7 +78,7 @@ class RegistrationFormType extends AbstractType
             ->add('profilePicture', FileType::class, [
                 'label' => 'Profile Picture (JPEG or PNG file)',
                 'mapped' => false,
-                'required' => false,
+                'required' => true,
                 'constraints' => [
                     new File([
                         'maxSize' => '1024k',
