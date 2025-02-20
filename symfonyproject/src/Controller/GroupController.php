@@ -84,6 +84,10 @@ class GroupController extends AbstractController
             throw new \LogicException('The user is not authenticated or is not an instance of User.');
         }
 
+        $allUsers = $managerRegistry->getRepository(User::class)->findAll();
+
+        $idGroup = $user->getIdGroup();
+
         return $this->render('group/group.html.twig',[
             'isInGroup' => $user->getIdGroup() !== null,
             'allUsers' => $allUsers,
