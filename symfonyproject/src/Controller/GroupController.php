@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Form\GroupeCreationType;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use App\Entity\ScoreHistory;
 
 class GroupController extends AbstractController
 {
@@ -53,6 +54,9 @@ class GroupController extends AbstractController
 
         $groupName = $user->getIdGroup() !== null ? $user->getIdGroup()->getName() : null;
 
+        $groupHistory = $managerRegistry->getRepository(ScoreHistory::class)->findBy(['idGroup' => $user->getIdGroup()]);
+        $groupHistory = array_reverse($groupHistory);
+
         return $this->render('group/group.html.twig', [
             'formGroup' => $form->createView(),
             'isInGroup' => $user->getIdGroup() !== null,
@@ -60,6 +64,7 @@ class GroupController extends AbstractController
             'groupScore' => $groupScore,
             'groups' => $groups,
             'groupName' => $groupName,
+            'groupHistory' => $groupHistory,
         ]);
     }
 
@@ -74,6 +79,7 @@ class GroupController extends AbstractController
         if (!$user instanceof User) {
             throw new \LogicException('The user is not authenticated or is not an instance of User.');
         }
+
 
         return $this->render('group/group.html.twig',[
             'isInGroup' => $user->getIdGroup() !== null,

@@ -12,6 +12,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use App\Entity\User;
+use App\Entity\ScoreHistory;
 
 class HabitsController extends AbstractController
 {
@@ -96,14 +97,129 @@ class HabitsController extends AbstractController
             $points = $request->request->get('points', 0);
             $user = $habitTracking->getIdUser();
             $user->setScore($user->getScore() + $points);
+
+            // Vérifier si la tâche est une tâche de groupe et augmenter le score du groupe
+            if ($habitTracking->getIdGroup()) {
+                $group = $habitTracking->getIdGroup();
+                $group->setScore($group->getScore() + $points);
+                $entityManager->persist($group);
+
+                $scoreHistory = new ScoreHistory();
+                $scoreHistory->setPoints($points);
+                $scoreHistory->setDate(new \DateTime('now'));
+                $scoreHistory->setIdGroup($group);
+                $scoreHistory->setDescription('Task completed by ' . $user->getPseudo() . ' for ' . $points . ' points'); 
+                $entityManager->persist($scoreHistory);
+            }
+
             $entityManager->flush();
         }
 
         return $this->redirectToRoute('formhabits');
     }
 
-    public function habits()
+    public function habits(ManagerRegistry $managerRegistry, TokenStorageInterface $tokenStorage): Response
     {
+        $token = $tokenStorage->getToken();
+        if (null === $token) {
+            throw new \LogicException('No token found in storage.');
+        }
+
+        $user = $token->getUser();
+        if (!$user instanceof User) {
+            throw new \LogicException('The user is not authenticated or is not an instance of User.');
+        }
+
+        $userHabitTrackings = $managerRegistry->getRepository(HabitTracking::class)->findBy(['idUser' => $user]);
+        
+        $entityManager = $managerRegistry->getManager();
+        $now = new \DateTime('now');
+        //$now = (clone $now)->add(new \DateInterval('P1D'))->setTime(0, 0, 0);
+
+        foreach ($userHabitTrackings as $tracking) {
+            $habit = $tracking->getIdHabit();
+            if ($habit->getFrequency() === 'daily') {
+                $createdDate = $tracking->getDate();
+                $interval = $createdDate->diff($now);
+                if ($interval->days > 1 && $tracking->getStatus() == 0) {
+                    if($habit->getDifficulty() == 'easy') {
+                        $user->setScore($user->getScore() - 5);
+                    } elseif($habit->getDifficulty() == 'medium') {
+                        $user->setScore($user->getScore() - 3);
+                    } elseif($habit->getDifficulty() == 'hard') {
+                        $user->setScore($user->getScore() - 2);
+                    } else {
+                        $user->setScore($user->getScore() - 8);
+                    }
+                    if($user->getScore() < 0) {
+                        $user->setScore(0);
+                    }
+                    $entityManager->persist($user);
+
+                    if ($tracking->getIdGroup()) {
+                        $group = $tracking->getIdGroup();
+                        if($habit->getDifficulty() == 'easy') {
+                            $group->setScore($group->getScore() - 5);
+                        } elseif($habit->getDifficulty() == 'medium') {
+                            $group->setScore($group->getScore() - 3);
+                        } elseif($habit->getDifficulty() == 'hard') {
+                            $group->setScore($group->getScore() - 2);
+                        } else {
+                            $group->setScore($group->getScore() - 8);
+                        }
+                        if($group->getScore() < 0) {
+                            $group->setScore(0);
+                        }
+                        $entityManager->persist($group);
+                    }
+                } elseif ($interval->days > 1 && $tracking->getStatus() == 1) {
+                    $tracking->setStatus(0);
+                    $entityManager->persist($tracking);
+                }
+            }
+            if ($habit->getFrequency() === 'weekly') {
+                $createdDate = $tracking->getDate();
+                $interval = $createdDate->diff($now);
+                if ($interval->days > 7 && $tracking->getStatus() == 0) {
+                    if($habit->getDifficulty() == 'easy') {
+                        $user->setScore($user->getScore() - 5);
+                    } elseif($habit->getDifficulty() == 'medium') {
+                        $user->setScore($user->getScore() - 3);
+                    } elseif($habit->getDifficulty() == 'hard') {
+                        $user->setScore($user->getScore() - 2);
+                    } else {
+                        $user->setScore($user->getScore() - 8);
+                    }
+                    if($user->getScore() < 0) {
+                        $user->setScore(0);
+                    }
+                    $entityManager->persist($user);
+
+                    if ($tracking->getIdGroup()) {
+                        $group = $tracking->getIdGroup();
+                        if($habit->getDifficulty() == 'easy') {
+                            $group->setScore($group->getScore() - 5);
+                        } elseif($habit->getDifficulty() == 'medium') {
+                            $group->setScore($group->getScore() - 3);
+                        } elseif($habit->getDifficulty() == 'hard') {
+                            $group->setScore($group->getScore() - 2);
+                        } else {
+                            $group->setScore($group->getScore() - 8);
+                        }
+                        if($group->getScore() < 0) {
+                            $group->setScore(0);
+                        }
+                        $entityManager->persist($group);
+                    }
+                } elseif ($interval->days > 7 && $tracking->getStatus() == 1) {
+                    $tracking->setStatus(0);
+                    $entityManager->persist($tracking);
+                }
+            }
+        }
+
+        $entityManager->flush();
+
         return $this->render('habits/habits.html.twig',[]);
     }
 }

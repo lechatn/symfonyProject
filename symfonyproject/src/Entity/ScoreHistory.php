@@ -24,6 +24,9 @@ class ScoreHistory
     #[ORM\JoinColumn(nullable: false)]
     private ?Group $idGroup = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $description = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -61,6 +64,18 @@ class ScoreHistory
     public function setIdGroup(?Group $idGroup): static
     {
         $this->idGroup = $idGroup;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }
