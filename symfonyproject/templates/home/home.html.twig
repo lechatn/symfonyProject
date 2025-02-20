@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Bienvenue sur HabitTracker!{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Bienvenue sur HabitTracker!</h1>
+        <p>Ceci est la page d'accueil de votre application de suivi d'habitudes.</p>
+        <p>Connectez-vous pour commencer à suivre vos habitudes ou créez un compte si vous n'en avez pas encore.</p>
+
+        <section class="features">
+            <h2>Fonctionnalités principales</h2>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <h3>📅 Suivi des habitudes</h3>
+                    <p>Ajoutez et suivez vos habitudes quotidiennes ou hebdomadaires.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>👥 Gestion des groupes</h3>
+                    <p>Créez ou rejoignez un groupe d'amis pour suivre vos habitudes ensemble.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>🏆 Système de points</h3>
+                    <p>Gagnez des points en accomplissant vos habitudes et évitez de perdre des points en cas d'échec.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .features {
+            margin: 40px 0;
+        }
+        .features h2 {
+            font-size: 2em;
+            color: #444;
+            margin-bottom: 20px;
+        }
+        .feature-list {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        .feature-item {
+            flex: 1 1 30%;
+            margin: 10px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .feature-item h3 {
+            font-size: 1.5em;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        .feature-item p {
+            font-size: 1em;
+            color: #555;
+        }
+    </style>
+{% endblock %}
