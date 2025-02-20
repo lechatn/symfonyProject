@@ -2,18 +2,28 @@
 
 {% block title %}Mails{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/css/mail.css') }}">
+{% endblock %}
+
 {% block body %}
-<h1>Vos Mails</h1>
-<ul>
-    {% for mail in personnalMails %}
-        <li>
-            <strong>{{ mail.type }}</strong>: {{ mail.description }}
-            {% if mail.type == 'invitation' %}
-                <form action="{{ path('join_group', { 'id': mail.idGroup.id }) }}" method="post">
-                    <button type="submit">Accepter</button>
-                </form>
-            {% endif %}
-        </li>
-    {% endfor %}
-</ul>
+<div class="mail-container">
+    <h1>Vos Mails</h1>
+    <ul class="mail-list">
+        {% for mail in personnalMails %}
+            <li class="mail-item">
+                <strong>{{ mail.type }}</strong> {{ mail.description }}
+                {% if mail.type == 'invitation' %}
+                    <form action="{{ path('join_group', { 'id': mail.idGroup.id }) }}" method="post">
+                        <button type="submit">Accepter</button>
+                    </form>
+                    <form action="{{ path('decline_group', { 'mail': mail.id}) }}" method="post">
+                        <button type="submit">Refuser</button>
+                    </form>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</div>
 {% endblock %}

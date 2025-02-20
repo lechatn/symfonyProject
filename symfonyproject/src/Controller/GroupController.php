@@ -213,7 +213,7 @@ class GroupController extends AbstractController
         $mail = new Mail();
 
         $mail->setType('invitation');
-        $mail->setDescription('You have been invited to join the group ' . $groupName);
+        $mail->setDescription('You have been invited to join the group :' . $groupName);
         $mail->setUserMail($invitedUser);
         $mail->setIdGroup($group);
         $mail->setIdSender($user);
@@ -225,6 +225,32 @@ class GroupController extends AbstractController
 
 
         return $this->redirectToRoute('group');
+    }
+
+    #[Route ('/group/decline/{mail}', name: 'decline_group')]
+    public function declineInvitation(TokenStorageInterface $tokenStorage, ManagerRegistry $managerRegistry, Request $request, $mail): Response
+    {
+        $token = $tokenStorage->getToken();
+        if (null === $token) {
+            throw new \LogicException('No token found in storage.');
+        }
+
+        $user = $token->getUser();
+        if (!$user instanceof User) {
+            throw new \LogicException('The user is not authenticated or is not an instance of User.');
+        }
+
+        $entityManager = $managerRegistry->getManager();
+        $mailEntity = $managerRegistry->getRepository(Mail::class)->find($mail);
+
+        if (!$mailEntity) {
+            throw $this->createNotFoundException('Mail not found.');
+        }
+
+        $entityManager->remove($mailEntity);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('mail');
     }
 
 }
