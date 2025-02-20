@@ -20,7 +20,18 @@
         <h2>Score du groupe : {{ groupScore }}</h2>
         <form action="{{ path('leave_group') }}" method="post">
             <button type="submit">Quitter le groupe</button>
-        </form>        
+        </form>
+        <button onclick="document.getElementById('popup').showModal()">Inviter un utilisateur</button>
+        <dialog id="popup">
+        {% for user in allUsers %}
+            <p class="user">{{ user.pseudo }}</p>
+            <form action="{{ path('invite_user', { 'email': user.email, 'idGroup': idGroup }) }}" method="post">
+                <input type="hidden" name="useremail" value="{{ user.email }}">
+                <button type="submit">Inviter</button>
+            </form>
+        {% endfor %}
+        <button onclick="document.getElementById('popup').close()">Fermer</button>
+        </dialog>
     {% else %}
         {{ form(formGroup) }}
         <h2> Join a group :</h2>

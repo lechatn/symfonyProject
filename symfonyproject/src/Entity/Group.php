@@ -32,10 +32,14 @@ class Group
     #[ORM\JoinColumn(nullable: false)]
     private ?User $creatorId = null;
 
+    #[ORM\OneToMany(targetEntity: Mail::class, mappedBy: 'idGroup')]
+    private Collection $mails;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
         $this->scoreHistories = new ArrayCollection();
+        $this->mails = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -135,6 +139,36 @@ class Group
     public function setCreatorId(User $creatorId): static
     {
         $this->creatorId = $creatorId;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Mail>
+     */
+    public function getMails(): Collection
+    {
+        return $this->mails;
+    }
+
+    public function addMail(Mail $mail): static
+    {
+        if (!$this->mails->contains($mail)) {
+            $this->mails->add($mail);
+            $mail->setIdGroup($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMail(Mail $mail): static
+    {
+        if ($this->mails->removeElement($mail)) {
+            // set the owning side to null (unless already changed)
+            if ($mail->getIdGroup() === $this) {
+                $mail->setIdGroup(null);
+            }
+        }
 
         return $this;
     }

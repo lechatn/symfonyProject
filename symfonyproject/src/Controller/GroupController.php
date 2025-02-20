@@ -12,6 +12,7 @@ use App\Form\GroupeCreationType;
 use Doctrine\Common\Lexer\Token;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use App\Entity\Mail;
 
 class GroupController extends AbstractController
 {
@@ -52,6 +53,10 @@ class GroupController extends AbstractController
 
         $groupName = $user->getIdGroup() !== null ? $user->getIdGroup()->getName() : null;
 
+        $allUsers = $managerRegistry->getRepository(User::class)->findAll();
+
+        $idGroup = $user->getIdGroup();
+
         return $this->render('group/group.html.twig', [
             'formGroup' => $form->createView(),
             'isInGroup' => $user->getIdGroup() !== null,
@@ -59,10 +64,12 @@ class GroupController extends AbstractController
             'groupScore' => $groupScore,
             'groups' => $groups,
             'groupName' => $groupName,
+            'allUsers' => $allUsers,
+            'idGroup' => $idGroup,
         ]);
     }
 
-    public function group(TokenStorageInterface $tokenStorage): Response
+    public function group(TokenStorageInterface $tokenStorage, ManagerRegistry $managerRegistry): Response
     {
         $token = $tokenStorage->getToken();
         if (null === $token) {
@@ -74,8 +81,15 @@ class GroupController extends AbstractController
             throw new \LogicException('The user is not authenticated or is not an instance of User.');
         }
 
+        $allUsers = $managerRegistry->getRepository(User::class)->findAll();
+
+        $idGroup = $user->getIdGroup();
+
+
         return $this->render('group/group.html.twig',[
             'isInGroup' => $user->getIdGroup() !== null,
+            'allUsers' => $allUsers,
+            'idGroup' => $idGroup,
         ]);
     }
 
@@ -121,6 +135,39 @@ class GroupController extends AbstractController
         $entityManager = $managerRegistry->getManager();
         $entityManager->persist($user);
         $entityManager->flush();
+
+        return $this->redirectToRoute('group');
+    }
+
+    #[Route('/group/invite', name: 'invite_user')]
+    public function inviteUser(Request $request, TokenStorageInterface $tokenStorage, ManagerRegistry $managerRegistry): Response
+    {
+        $token = $tokenStorage->getToken();
+        if (null === $token) {
+            throw new \LogicException('No token found in storage.');
+        }
+
+        $user = $token->getUser();
+        if (!$user instanceof User) {
+            throw new \LogicException('The user is not authenticated or is not an instance of User.');
+        }
+
+        $email = $request->request->get('email');
+        $idGroup = $request->request->get('idGroup');
+        $groupName = $managerRegistry->getRepository(Group::class)->find($idGroup)->getName();
+        $mail = new Mail();
+
+        $mail->setType('invitation');
+        $mail->setDescription('You have been invited to join the group ' . $groupName);
+        $mail->setUserMail($managerRegistry->getRepository(User::class)->findOneBy(['email' => $email]));
+        $mail->setIdGroup($idGroup);
+        $mail->setIdSender($user);
+
+        $entityManager = $managerRegistry->getManager();
+        $entityManager->persist($mail);
+        $entityManager->flush();      
+
+
 
         return $this->redirectToRoute('group');
     }

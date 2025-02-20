@@ -55,9 +55,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $score = null;
 
+    #[ORM\OneToMany(targetEntity: Mail::class, mappedBy: 'UserMail')]
+    private Collection $mails;
+
+    #[ORM\OneToMany(targetEntity: Mail::class, mappedBy: 'idSender')]
+    private Collection $mails_send;
+
     public function __construct()
     {
         $this->habitTrackings = new ArrayCollection();
+        $this->mails = new ArrayCollection();
+        $this->mails_send = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -240,6 +248,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setScore(int $score): static
     {
         $this->score = $score;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Mail>
+     */
+    public function getMails(): Collection
+    {
+        return $this->mails;
+    }
+
+    public function addMail(Mail $mail): static
+    {
+        if (!$this->mails->contains($mail)) {
+            $this->mails->add($mail);
+            $mail->setUserMail($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMail(Mail $mail): static
+    {
+        if ($this->mails->removeElement($mail)) {
+            // set the owning side to null (unless already changed)
+            if ($mail->getUserMail() === $this) {
+                $mail->setUserMail(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Mail>
+     */
+    public function getMailsSend(): Collection
+    {
+        return $this->mails_send;
+    }
+
+    public function addMailsSend(Mail $mailsSend): static
+    {
+        if (!$this->mails_send->contains($mailsSend)) {
+            $this->mails_send->add($mailsSend);
+            $mailsSend->setIdSender($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMailsSend(Mail $mailsSend): static
+    {
+        if ($this->mails_send->removeElement($mailsSend)) {
+            // set the owning side to null (unless already changed)
+            if ($mailsSend->getIdSender() === $this) {
+                $mailsSend->setIdSender(null);
+            }
+        }
 
         return $this;
     }
