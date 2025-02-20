@@ -32,14 +32,14 @@ class Group
     #[ORM\JoinColumn(nullable: false)]
     private ?User $creatorId = null;
 
-    #[ORM\OneToMany(targetEntity: HabitTracking::class, mappedBy: 'idGroup')]
-    private Collection $habitTrackings;
+    #[ORM\OneToMany(targetEntity: Mail::class, mappedBy: 'idGroup')]
+    private Collection $mails;
 
     public function __construct()
     {
         $this->users = new ArrayCollection();
         $this->scoreHistories = new ArrayCollection();
-        $this->habitTrackings = new ArrayCollection();
+        $this->mails = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -144,29 +144,29 @@ class Group
     }
 
     /**
-     * @return Collection<int, HabitTracking>
+     * @return Collection<int, Mail>
      */
-    public function getHabitTrackings(): Collection
+    public function getMails(): Collection
     {
-        return $this->habitTrackings;
+        return $this->mails;
     }
 
-    public function addHabitTracking(HabitTracking $habitTracking): static
+    public function addMail(Mail $mail): static
     {
-        if (!$this->habitTrackings->contains($habitTracking)) {
-            $this->habitTrackings->add($habitTracking);
-            $habitTracking->setIdGroup($this);
+        if (!$this->mails->contains($mail)) {
+            $this->mails->add($mail);
+            $mail->setIdGroup($this);
         }
 
         return $this;
     }
 
-    public function removeHabitTracking(HabitTracking $habitTracking): static
+    public function removeMail(Mail $mail): static
     {
-        if ($this->habitTrackings->removeElement($habitTracking)) {
+        if ($this->mails->removeElement($mail)) {
             // set the owning side to null (unless already changed)
-            if ($habitTracking->getIdGroup() === $this) {
-                $habitTracking->setIdGroup(null);
+            if ($mail->getIdGroup() === $this) {
+                $mail->setIdGroup(null);
             }
         }
 

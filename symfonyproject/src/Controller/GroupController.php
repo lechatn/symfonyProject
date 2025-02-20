@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Form\GroupeCreationType;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use App\Entity\Mail;
 use App\Entity\ScoreHistory;
 
 class GroupController extends AbstractController
@@ -54,6 +55,10 @@ class GroupController extends AbstractController
 
         $groupName = $user->getIdGroup() !== null ? $user->getIdGroup()->getName() : null;
 
+        $allUsers = $managerRegistry->getRepository(User::class)->findAll();
+
+        $idGroup = $user->getIdGroup();
+
         $groupHistory = $managerRegistry->getRepository(ScoreHistory::class)->findBy(['idGroup' => $user->getIdGroup()]);
         $groupHistory = array_reverse($groupHistory);
 
@@ -64,11 +69,10 @@ class GroupController extends AbstractController
             'groupScore' => $groupScore,
             'groups' => $groups,
             'groupName' => $groupName,
-            'groupHistory' => $groupHistory,
         ]);
     }
 
-    public function group(TokenStorageInterface $tokenStorage): Response
+    public function group(TokenStorageInterface $tokenStorage, ManagerRegistry $managerRegistry): Response
     {
         $token = $tokenStorage->getToken();
         if (null === $token) {
@@ -80,9 +84,10 @@ class GroupController extends AbstractController
             throw new \LogicException('The user is not authenticated or is not an instance of User.');
         }
 
-
         return $this->render('group/group.html.twig',[
             'isInGroup' => $user->getIdGroup() !== null,
+            'allUsers' => $allUsers,
+            'idGroup' => $idGroup,
         ]);
     }
 
@@ -152,4 +157,5 @@ class GroupController extends AbstractController
 
         return $this->redirectToRoute('group');
     }
+
 }
