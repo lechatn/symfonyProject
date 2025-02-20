@@ -25,10 +25,16 @@ class ProfileController extends AbstractController
         $profilepicture = $user->getProfilePicture();
         $pseudo = $user->getPseudo();
         $email = $user->getEmail();
+        $name = $user->getName();
+        $firstname = $user->getFirstname();
+        $score = $user->getScore();
 
         return $this->render('user/profile.html.twig',[
             'pseudo' => $pseudo,
-            'email' => $email
+            'email' => $email,
+            'name' => $name,
+            'firstname' => $firstname,
+            'score' => $score,
         ]);
     }
 }
