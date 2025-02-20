@@ -28,11 +28,14 @@
         <button onclick="document.getElementById('popup').showModal()">Inviter un utilisateur</button>
         <dialog id="popup">
         {% for user in allUsers %}
-            <p class="user">{{ user.pseudo }}</p>
-            <form action="{{ path('invite_user', { 'email': user.email, 'idGroup': idGroup }) }}" method="post">
-                <input type="hidden" name="useremail" value="{{ user.email }}">
-                <button type="submit">Inviter</button>
-            </form>
+            {% if user.id != currentUser.id %}
+                <p class="user">{{ user.pseudo }}</p>
+                <form action="{{ path('invite_user', { 'email': user.email, 'idGroup': idGroup }) }}" method="post">
+                    <input type="hidden" name="useremail" value="{{ user.email }}">
+                    <input type="hidden" name="groupId" value="{{ idGroup }}">
+                    <button type="submit">Inviter</button>
+                </form>
+            {% endif %}
         {% endfor %}
         <button onclick="document.getElementById('popup').close()">Fermer</button>
         </dialog>

@@ -35,11 +35,15 @@ class Group
     #[ORM\OneToMany(targetEntity: Mail::class, mappedBy: 'idGroup')]
     private Collection $mails;
 
+    #[ORM\OneToMany(targetEntity: HabitTracking::class, mappedBy: 'idGroup')]
+    private Collection $habitTrackings;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
         $this->scoreHistories = new ArrayCollection();
         $this->mails = new ArrayCollection();
+        $this->habitTrackings = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -167,6 +171,36 @@ class Group
             // set the owning side to null (unless already changed)
             if ($mail->getIdGroup() === $this) {
                 $mail->setIdGroup(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, HabitTracking>
+     */
+    public function getHabitTrackings(): Collection
+    {
+        return $this->habitTrackings;
+    }
+
+    public function addHabitTracking(HabitTracking $habitTracking): static
+    {
+        if (!$this->habitTrackings->contains($habitTracking)) {
+            $this->habitTrackings->add($habitTracking);
+            $habitTracking->setIdGroup($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHabitTracking(HabitTracking $habitTracking): static
+    {
+        if ($this->habitTrackings->removeElement($habitTracking)) {
+            // set the owning side to null (unless already changed)
+            if ($habitTracking->getIdGroup() === $this) {
+                $habitTracking->setIdGroup(null);
             }
         }
 

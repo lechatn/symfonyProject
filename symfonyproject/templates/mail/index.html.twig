@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mails{% endblock %}
+
+{% block body %}
+<h1>Vos Mails</h1>
+<ul>
+    {% for mail in personnalMails %}
+        <li>
+            <strong>{{ mail.type }}</strong>: {{ mail.description }}
+            {% if mail.type == 'invitation' %}
+                <form action="{{ path('join_group', { 'id': mail.idGroup.id }) }}" method="post">
+                    <button type="submit">Accepter</button>
+                </form>
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}

@@ -57,10 +57,12 @@ class GroupController extends AbstractController
 
         $allUsers = $managerRegistry->getRepository(User::class)->findAll();
 
-        $idGroup = $user->getIdGroup();
+        $idGroup = $user->getIdGroup() ? $user->getIdGroup()->getId() : null;
 
         $groupHistory = $managerRegistry->getRepository(ScoreHistory::class)->findBy(['idGroup' => $user->getIdGroup()]);
         $groupHistory = array_reverse($groupHistory);
+
+        $userMail = $user->getEmail();
 
         return $this->render('group/group.html.twig', [
             'formGroup' => $form->createView(),
@@ -69,6 +71,11 @@ class GroupController extends AbstractController
             'groupScore' => $groupScore,
             'groups' => $groups,
             'groupName' => $groupName,
+            'allUsers' => $allUsers,
+            'idGroup' => $idGroup,
+            'groupHistory' => $groupHistory,
+            'userMail' => $userMail,
+            'currentUser' => $user,
         ]);
     }
 
@@ -110,11 +117,22 @@ class GroupController extends AbstractController
 
         $entityManager = $managerRegistry->getManager();
 
-        // Supprimer les tâches de groupe associées à l'utilisateur
+        
         $groupHabitTrackings = $managerRegistry->getRepository(HabitTracking::class)->findBy(['idUser' => $user, 'idGroup' => $user->getIdGroup()]);
         foreach ($groupHabitTrackings as $habitTracking) {
             $entityManager->remove($habitTracking);
         }
+
+        $group = $user->getIdGroup();
+        if ($group->getCreatorId() === $user) {
+            $groupMembers = $managerRegistry->getRepository(User::class)->findBy(['idGroup' => $group]);
+            foreach ($groupMembers as $member) {
+                $member->setIdGroup(null);
+                $entityManager->persist($member);
+            }
+            $entityManager->remove($group);
+        }
+
 
         $user->setIdGroup(null);
 
@@ -158,6 +176,53 @@ class GroupController extends AbstractController
 
         $entityManager->persist($user);
         $entityManager->flush();
+
+        return $this->redirectToRoute('group');
+    }
+
+    #[Route('/group/invite', name: 'invite_user')]
+    public function inviteUser(Request $request, TokenStorageInterface $tokenStorage, ManagerRegistry $managerRegistry): Response
+    {
+        $token = $tokenStorage->getToken();
+        if (null === $token) {
+            throw new \LogicException('No token found in storage.');
+        }
+
+        $user = $token->getUser();
+        if (!$user instanceof User) {
+            throw new \LogicException('The user is not authenticated or is not an instance of User.');
+        }
+
+        $email = $request->request->get('useremail');
+        $idGroup = $request->request->get('groupId');
+        $userRepository = $managerRegistry->getRepository(User::class);
+        $invitedUser = $userRepository->findOneBy(['email' => $email]);
+        
+        if (!$invitedUser) {
+            throw $this->createNotFoundException('User with this email was not found.');
+        }
+
+        $group = $managerRegistry->getRepository(Group::class)->find($idGroup);
+
+        if (!$group) {
+            throw $this->createNotFoundException('Group not found');
+        }
+
+        $groupName = $group->getName();
+
+        $mail = new Mail();
+
+        $mail->setType('invitation');
+        $mail->setDescription('You have been invited to join the group ' . $groupName);
+        $mail->setUserMail($invitedUser);
+        $mail->setIdGroup($group);
+        $mail->setIdSender($user);
+
+        $entityManager = $managerRegistry->getManager();
+        $entityManager->persist($mail);
+        $entityManager->flush();      
+
+
 
         return $this->redirectToRoute('group');
     }

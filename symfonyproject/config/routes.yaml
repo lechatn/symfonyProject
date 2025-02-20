@@ -31,3 +31,7 @@ habits:
 register:
     path: /
     controller: App\Controller\RegistrationController::register
+
+mail:
+    path: /mail
+    controller: App\Controller\MailController::mail
