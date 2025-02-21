@@ -14,12 +14,12 @@
         {% for mail in personnalMails %}
             <li class="mail-item">
                 <strong>{{ mail.type }}</strong> {{ mail.description }}
-                {% if mail.type == 'invitation' %}
+                {% if mail.type == 'Invit to join a group!' %}
                     <form action="{{ path('join_group', { 'id': mail.idGroup.id }) }}" method="post">
                         <button type="submit">Accept</button>
                     </form>
                     <form action="{{ path('decline_group', { 'mail': mail.id}) }}" method="post">
-                        <button type="submit">Reject</button>
+                        <button type="submit">Refuse</button>
                     </form>
                 {% endif %}
             </li>
