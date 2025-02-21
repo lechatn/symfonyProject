@@ -23,9 +23,9 @@
             <p>{{ history.description }}</p>
         {% endfor %}
         <form action="{{ path('leave_group') }}" method="post">
-            <button type="submit">Quitter le groupe</button>
+            <button type="submit">Leave the group</button>
         </form>
-        <button onclick="document.getElementById('popup').showModal()">Inviter un utilisateur</button>
+        <button onclick="document.getElementById('popup').showModal()">Invit user</button>
         <dialog id="popup">
         {% for user in allUsers %}
             {% if user.id != currentUser.id %}

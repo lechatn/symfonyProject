@@ -212,8 +212,8 @@ class GroupController extends AbstractController
 
         $mail = new Mail();
 
-        $mail->setType('invitation');
-        $mail->setDescription('You have been invited to join the group :' . $groupName);
+        $mail->setType('Invit to join a group!');
+        $mail->setDescription('You have been invited to join the group : ' . $groupName);
         $mail->setUserMail($invitedUser);
         $mail->setIdGroup($group);
         $mail->setIdSender($user);
