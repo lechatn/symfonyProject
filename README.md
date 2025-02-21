@@ -25,29 +25,17 @@ Before you begin, ensure you have the following installed on your machine:
     composer install
     ```
 
-3. Install JavaScript dependencies using npm:
-
-    ```bash
-    npm install
-    ```
-
-4. Create a `.env.local` file and configure your database connection:
+3. Create a `.env` file and configure your database connection:
 
     ```dotenv
     DATABASE_URL="mysql://db_user:db_password@127.0.0.1:3306/db_name"
     ```
 
-5. Create the database and run migrations:
+4. Create the database and run migrations:
 
     ```bash
     php bin/console doctrine:database:create
     php bin/console doctrine:migrations:migrate
-    ```
-
-6. Install assets:
-
-    ```bash
-    npm run dev
     ```
 
 ## Running the Project
@@ -83,7 +71,3 @@ Before you begin, ensure you have the following installed on your machine:
     ```bash
     php bin/phpunit
     ```
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
