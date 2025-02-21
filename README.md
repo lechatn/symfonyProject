@@ -7,8 +7,6 @@ Before you begin, ensure you have the following installed on your machine:
 - PHP 8.0 or higher
 - Composer
 - Symfony CLI
-- Node.js and npm (for managing frontend assets)
-- A database server (e.g., MySQL, PostgreSQL)
 
 ## Installation
 
@@ -28,13 +26,12 @@ Before you begin, ensure you have the following installed on your machine:
 3. Create a `.env` file and configure your database connection:
 
     ```dotenv
-    DATABASE_URL="mysql://db_user:db_password@127.0.0.1:3306/db_name"
+    DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db"
     ```
 
-4. Create the database and run migrations:
+4. Run database migrations:
 
     ```bash
-    php bin/console doctrine:database:create
     php bin/console doctrine:migrations:migrate
     ```
 
@@ -43,7 +40,7 @@ Before you begin, ensure you have the following installed on your machine:
 1. Start the Symfony server:
 
     ```bash
-    symfony server:start
+    symfony serve
     ```
 
 2. Open your browser and navigate to:
@@ -66,8 +63,3 @@ Before you begin, ensure you have the following installed on your machine:
     php bin/console cache:clear
     ```
 
-- To run tests:
-
-    ```bash
-    php bin/phpunit
-    ```
