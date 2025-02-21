@@ -1,13 +1,44 @@
-.profile-picture {
-    width: 300px;
-    height: 300px;
-    border-radius: 50%;
-    object-fit: cover;
-    object-position: center;
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 600px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.profile-container {
-    display: block;
-    text-align: center;
-    margin-top: 5%;
+.profile-picture {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 20px;
+}
+
+.pseudo, .name, .email, .score {
+    font-size: 1.2em;
+    margin: 10px 0;
+    color: #333;
+}
+
+.pseudo {
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+.name {
+    font-size: 1.3em;
+}
+
+.email {
+    font-size: 1.1em;
+    color: #555;
+}
+
+.score {
+    font-size: 1.2em;
+    color: #007bff;
 }

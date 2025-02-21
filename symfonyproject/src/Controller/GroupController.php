@@ -162,7 +162,6 @@ class GroupController extends AbstractController
 
         $entityManager = $managerRegistry->getManager();
 
-        // Assigner les tâches de groupe à l'utilisateur qui rejoint le groupe
         $groupHabitsTracking = $managerRegistry->getRepository(HabitTracking::class)->findBy(['idGroup' => $group]);
         foreach ($groupHabitsTracking as $habit) {
             $habitTracking = new HabitTracking();
@@ -212,8 +211,8 @@ class GroupController extends AbstractController
 
         $mail = new Mail();
 
-        $mail->setType('invitation');
-        $mail->setDescription('You have been invited to join the group :' . $groupName);
+        $mail->setType('Invit to join a group!');
+        $mail->setDescription('You have been invited to join the group : ' . $groupName);
         $mail->setUserMail($invitedUser);
         $mail->setIdGroup($group);
         $mail->setIdSender($user);

@@ -98,7 +98,6 @@ class HabitsController extends AbstractController
             $user = $habitTracking->getIdUser();
             $user->setScore($user->getScore() + $points);
 
-            // Vérifier si la tâche est une tâche de groupe et augmenter le score du groupe
             if ($habitTracking->getIdGroup()) {
                 $group = $habitTracking->getIdGroup();
                 $group->setScore($group->getScore() + $points);
@@ -134,7 +133,6 @@ class HabitsController extends AbstractController
         
         $entityManager = $managerRegistry->getManager();
         $now = new \DateTime('now');
-        //$now = (clone $now)->add(new \DateInterval('P1D'))->setTime(0, 0, 0);
 
         foreach ($userHabitTrackings as $tracking) {
             $habit = $tracking->getIdHabit();
