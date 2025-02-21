@@ -162,7 +162,6 @@ class GroupController extends AbstractController
 
         $entityManager = $managerRegistry->getManager();
 
-        // Assigner les tâches de groupe à l'utilisateur qui rejoint le groupe
         $groupHabitsTracking = $managerRegistry->getRepository(HabitTracking::class)->findBy(['idGroup' => $group]);
         foreach ($groupHabitsTracking as $habit) {
             $habitTracking = new HabitTracking();
